@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Upload Photos</title>
   <style>
     body {
@@ -15,7 +15,7 @@
     .top-controls {
       display: flex;
       flex-wrap: nowrap;
-      justify-content: space-between; /* равномерно распределяем */
+      justify-content: space-between;
       gap: 8px;
       max-width: 800px;
       margin: 0 auto 20px;
@@ -26,15 +26,15 @@
     }
 
     .top-controls .btn-top {
-      height: 56px;        /* большая высота */
+      height: 56px;
       font-size: 18px;
       border-radius: 14px;
       border: none;
       cursor: pointer;
       white-space: nowrap;
-      flex-grow: 1;        /* кнопки растягиваются */
-      min-width: 90px;     /* минимальная ширина */
-      max-width: 220px;    /* максимальная ширина */
+      flex-grow: 1;
+      min-width: 90px;
+      max-width: 220px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -53,6 +53,14 @@
       position: relative;
       font-weight: 600;
       max-width: 250px;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #000 50%),
+        linear-gradient(135deg, #000 50%, transparent 50%);
+      background-position:
+        calc(100% - 20px) calc(1em + 2px),
+        calc(100% - 15px) calc(1em + 2px);
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
     }
 
     .top-controls button.btn-top {
@@ -63,19 +71,6 @@
     .top-controls button.btn-top:hover,
     .top-controls select.btn-top:hover {
       opacity: 0.9;
-    }
-
-    /* Стрелочка для селекта */
-    .top-controls select.btn-top {
-      background-image:
-        linear-gradient(45deg, transparent 50%, #000 50%),
-        linear-gradient(135deg, #000 50%, transparent 50%),
-      background-position:
-        calc(100% - 20px) calc(1em + 2px),
-        calc(100% - 15px) calc(1em + 2px),
-        calc(100% - 25px) 0.5em;
-      background-size: 5px 5px, 5px 5px, 1px 1.5em;
-      background-repeat: no-repeat;
     }
 
     .cards {
@@ -268,7 +263,7 @@
       border: none;
       border-radius: 6px;
       padding: 15px 20px;
-      font-size: 20px; 
+      font-size: 20px;
       cursor: pointer;
     }
 
@@ -289,6 +284,42 @@
 
     #pageNumbers button.active {
       background-color: #1f2937;
+    }
+
+    /* 🔻 АДАПТИВ ДЛЯ МОБИЛЬНЫХ */
+    @media (max-width: 768px) {
+      .top-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .top-controls .btn-top,
+      .btn,
+      .controls input,
+      .pill,
+      .pagination button,
+      #pageNumbers button {
+        font-size: 16px;
+        height: auto;
+        padding: 10px 14px;
+        border-radius: 12px;
+      }
+
+      .modal {
+        padding: 20px;
+        width: 95vw;
+        height: 80vh;
+      }
+
+      .modal pre {
+        font-size: 16px;
+      }
+
+      .modal-close {
+        font-size: 36px;
+        top: 10px;
+        right: 14px;
+      }
     }
   </style>
 </head>
