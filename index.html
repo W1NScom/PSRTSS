@@ -173,6 +173,9 @@
       border-bottom: none;
     }
 
+    /* В mobile версиях меняем содержимое data-label для ПОЛОМКА и ВЫПОЛНИЛ чтобы не путать */
+    /* Можно настроить, если надо */
+
     tbody td::before {
       content: attr(data-label);
       font-weight: 700;
@@ -226,12 +229,22 @@
       display: inline-block;
     }
 
-    /* Кнопка отправить */
+    /* В мобильной версии кнопка "Отправить" в строке с data-label="ОТПРАВИТЬ" должна заменять заголовок */
+    tbody td[data-label="ОТПРАВИТЬ"] {
+      justify-content: flex-start;
+    }
+    /* При загрузке кнопка "Отправить" показывается */
     tbody td[data-label="ОТПРАВИТЬ"] button {
       width: 100%;
       box-sizing: border-box;
+      font-weight: 700;
     }
-
+    /* После нажатия заменим кнопку на текст "Отправлено" */
+    tbody td[data-label="ОТПРАВИТЬ"] span.sent-text {
+      font-weight: 700;
+      display: block;
+      width: 100%;
+    }
   }
 </style>
 </head>
@@ -315,7 +328,7 @@
         parentTd.removeChild(btn);
         const sentText = document.createElement('span');
         sentText.textContent = 'Отправлено';
-        sentText.style.fontWeight = '700';
+        sentText.classList.add('sent-text');
         parentTd.appendChild(sentText);
       }
     } catch (e) {
