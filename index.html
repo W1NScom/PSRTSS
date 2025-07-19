@@ -23,7 +23,7 @@
     max-width: 100vw;
   }
 
-  /* Стили для десктопа - обычная таблица */
+  /* --- Таблица для десктопа --- */
   table {
     width: 100%;
     border-collapse: collapse;
@@ -119,27 +119,26 @@
     color: white !important;
   }
 
-  /* --- Мобильная адаптация: превращаем таблицу в карточки --- */
-
+  /* --- Мобильная адаптация: карточки вместо таблицы --- */
   @media (max-width: 768px) {
     table, thead, tbody, th, td, tr {
       display: block;
       width: 100%;
     }
 
+    /* Убираем заголовок */
     thead tr {
-      display: none; /* Скрываем заголовок таблицы */
+      display: none;
     }
 
     tbody tr {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       background: white;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       padding: 12px;
       box-sizing: border-box;
 
-      /* Отключаем подсветку при нажатии */
       -webkit-tap-highlight-color: transparent;
       tap-highlight-color: transparent;
       user-select: none;
@@ -153,8 +152,13 @@
       background-color: white;
     }
 
+    /* Убираем колонку ЗАДАЧА (индекс 0) из карточки */
+    tbody td:nth-child(1) {
+      display: none;
+    }
+
+    /* Колонки с остальными данными */
     tbody td {
-      /* каждая ячейка - строка с лейблом и значением */
       display: flex;
       justify-content: space-between;
       padding: 6px 8px;
@@ -180,12 +184,54 @@
       text-overflow: ellipsis;
     }
 
-    /* Кнопки и селекты сжимаются */
+    /* Кнопки и селекты */
     select, button, .schema-button {
       font-size: 13px;
       padding: 5px 8px;
       font-weight: 700;
     }
+
+    /* Переместим кнопку "Открыть" вниз, в отдельный блок */
+    tbody tr > td:last-child {
+      position: relative;
+    }
+    tbody tr > td:last-child::after {
+      content: '';
+      display: block;
+      height: 0;
+      clear: both;
+      visibility: hidden;
+    }
+
+    /* Стили для контейнера кнопки "Открыть" в карточке */
+    tbody tr > td:last-child .mobile-schema-button {
+      display: none; /* по умолчанию скрыта */
+      margin-top: 10px;
+      float: left;
+      background-color: #1a2f40;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    /* Показываем кнопку "Открыть" в карточке и скрываем ее из таблицы */
+    tbody td:nth-child(1) a.schema-button {
+      display: none;
+    }
+    tbody tr > td:last-child .mobile-schema-button.show {
+      display: inline-block;
+    }
+
+    /* Кнопка отправить */
+    tbody td[data-label="ОТПРАВИТЬ"] button {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
   }
 </style>
 </head>
@@ -263,10 +309,14 @@
       }
       renderPage(currentPage);
 
-      // Меняем текст и блокируем кнопку
+      // После успешной отправки меняем кнопку на текст "Отправлено"
       if (btn) {
-        btn.textContent = "Отправлено";
-        btn.disabled = true;
+        const parentTd = btn.parentElement;
+        parentTd.removeChild(btn);
+        const sentText = document.createElement('span');
+        sentText.textContent = 'Отправлено';
+        sentText.style.fontWeight = '700';
+        parentTd.appendChild(sentText);
       }
     } catch (e) {
       alert('Ошибка при обновлении данных');
@@ -285,12 +335,12 @@
     pageData.forEach((row) => {
       const tr = document.createElement("tr");
 
-      const schemaLink = row[2]
-        ? `<a href="${row[2]}" target="_blank"><button class="schema-button">Открыть</button></a>`
-        : "Нет схемы";
+      const schemaLink = row[2] ? row[2] : "";
 
       tr.innerHTML = `
-        <td data-label="ЗАДАЧА">${schemaLink}</td>
+        <td data-label="ЗАДАЧА">
+          <a href="${schemaLink}" target="_blank" class="schema-button">Открыть</a>
+        </td>
         <td data-label="МАШИНА">${row[1]}</td>
         <td data-label="ОТКРЫТА">${row[3]}</td>
         <td data-label="ЗАКРЫТА">${row[4]}</td>
@@ -316,10 +366,16 @@
         }
         <td data-label="ОТПРАВИТЬ">
           <button id="btn_${row[0]}" onclick="validateAndSend(${row[0]}, this);">Отправить</button>
-        </td>`;
+          <!-- Кнопка Открыть для мобильной версии -->
+          <a href="${schemaLink}" target="_blank" class="mobile-schema-button">Открыть</a>
+        </td>
+      `;
 
       tableBody.appendChild(tr);
     });
+
+    // В мобильной версии показываем кнопку "Открыть" внутри колонки отправки, в десктопной — скрываем
+    toggleMobileSchemaButtons();
 
     applyHighlight();
     renderPageNumbers();
@@ -327,6 +383,19 @@
     document.getElementById("prevBtn").disabled = currentPage === 1;
     document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= fullData.length;
   }
+
+  // Показывать/скрывать кнопку "Открыть" в мобильной версии
+  function toggleMobileSchemaButtons() {
+    const width = window.innerWidth;
+    const buttons = document.querySelectorAll('.mobile-schema-button');
+    if (width <= 768) {
+      buttons.forEach(btn => btn.classList.add('show'));
+    } else {
+      buttons.forEach(btn => btn.classList.remove('show'));
+    }
+  }
+
+  window.addEventListener('resize', toggleMobileSchemaButtons);
 
   function renderPageNumbers() {
     const pageContainer = document.getElementById("pageNumbers");
