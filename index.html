@@ -23,7 +23,6 @@
     max-width: 100vw;
   }
 
-  /* --- Таблица для десктопа --- */
   table {
     width: 100%;
     border-collapse: collapse;
@@ -36,7 +35,7 @@
   th, td {
     padding: 6px 8px;
     text-align: center;
-    font-weight: 700; /* Жирный */
+    font-weight: 700;
     word-wrap: break-word;
     white-space: normal;
     font-size: clamp(10px, 2.5vw, 12px);
@@ -71,7 +70,7 @@
     font-size: clamp(9px, 2.5vw, 12px);
     padding: 4px 6px;
     border-radius: 4px;
-    font-weight: 700; /* Жирный */
+    font-weight: 700;
   }
 
   button {
@@ -79,7 +78,7 @@
     color: white;
     border: none;
     cursor: pointer;
-    font-weight: 700; /* Жирный */
+    font-weight: 700;
   }
 
   button:hover:enabled {
@@ -119,14 +118,13 @@
     color: white !important;
   }
 
-  /* --- Мобильная адаптация: карточки вместо таблицы --- */
+  /* --- Мобильная адаптация --- */
   @media (max-width: 768px) {
     table, thead, tbody, th, td, tr {
       display: block;
       width: 100%;
     }
 
-    /* Убираем заголовок */
     thead tr {
       display: none;
     }
@@ -152,12 +150,11 @@
       background-color: white;
     }
 
-    /* Убираем колонку ЗАДАЧА (индекс 0) из карточки */
+    /* Скрываем колонку ЗАДАЧА */
     tbody td:nth-child(1) {
       display: none;
     }
 
-    /* Колонки с остальными данными */
     tbody td {
       display: flex;
       justify-content: space-between;
@@ -173,9 +170,6 @@
       border-bottom: none;
     }
 
-    /* В mobile версиях меняем содержимое data-label для ПОЛОМКА и ВЫПОЛНИЛ чтобы не путать */
-    /* Можно настроить, если надо */
-
     tbody td::before {
       content: attr(data-label);
       font-weight: 700;
@@ -187,28 +181,32 @@
       text-overflow: ellipsis;
     }
 
-    /* Кнопки и селекты */
     select, button, .schema-button {
       font-size: 13px;
       padding: 5px 8px;
       font-weight: 700;
     }
 
-    /* Переместим кнопку "Открыть" вниз, в отдельный блок */
-    tbody tr > td:last-child {
-      position: relative;
+    tbody td[data-label="ОТПРАВИТЬ"] {
+      justify-content: flex-start;
     }
-    tbody tr > td:last-child::after {
-      content: '';
+    tbody td[data-label="ОТПРАВИТЬ"] button {
+      width: 100%;
+      box-sizing: border-box;
+      font-weight: 700;
+    }
+    tbody td[data-label="ОТПРАВИТЬ"] span.sent-text {
+      font-weight: 700;
       display: block;
-      height: 0;
-      clear: both;
-      visibility: hidden;
+      width: 100%;
     }
 
-    /* Стили для контейнера кнопки "Открыть" в карточке */
+    /* Показываем кнопку "Открыть" в карточке */
+    tbody td:nth-child(1) a.schema-button {
+      display: none;
+    }
     tbody tr > td:last-child .mobile-schema-button {
-      display: none; /* по умолчанию скрыта */
+      display: inline-block;
       margin-top: 10px;
       float: left;
       background-color: #1a2f40;
@@ -221,29 +219,26 @@
       text-decoration: none;
     }
 
-    /* Показываем кнопку "Открыть" в карточке и скрываем ее из таблицы */
-    tbody td:nth-child(1) a.schema-button {
+    /* Добавим замену заголовка в шапке таблицы (thead) */
+    thead tr th:last-child {
       display: none;
     }
-    tbody tr > td:last-child .mobile-schema-button.show {
-      display: inline-block;
-    }
-
-    /* В мобильной версии кнопка "Отправить" в строке с data-label="ОТПРАВИТЬ" должна заменять заголовок */
-    tbody td[data-label="ОТПРАВИТЬ"] {
-      justify-content: flex-start;
-    }
-    /* При загрузке кнопка "Отправить" показывается */
-    tbody td[data-label="ОТПРАВИТЬ"] button {
-      width: 100%;
-      box-sizing: border-box;
-      font-weight: 700;
-    }
-    /* После нажатия заменим кнопку на текст "Отправлено" */
-    tbody td[data-label="ОТПРАВИТЬ"] span.sent-text {
-      font-weight: 700;
+    /* Показать кнопку в "шапке" для мобильных — добавим вручную через JS */
+    #mobileHeaderBtn {
       display: block;
+      background-color: #dc143c;
+      color: white;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: default;
       width: 100%;
+      max-width: 120px;
+      margin: 0 auto 10px auto;
+      text-align: center;
+      box-sizing: border-box;
+      user-select: none;
     }
   }
 </style>
@@ -251,6 +246,10 @@
 <body>
 
 <div id="app-content" style="display:none;">
+
+  <!-- Кнопка вместо заголовка в мобильной версии -->
+  <button id="mobileHeaderBtn" style="display:none;" disabled>Отправить</button>
+
   <table>
     <thead>
       <tr>
@@ -274,7 +273,7 @@
 </div>
 
 <script>
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwVIBmW6gYERv1i1UeywqDY01YOIkExPrH9EG_31w1a0u3BrNVUINT1cxGpznbgc5ws/exec'; // Вставь свой URL
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwVIBmW6gYERv1i1UeywqDY01YOIkExPrH9EG_31w1a0u3BrNVUINT1cxGpznbgc5ws/exec';
 
   let fullData = [];
   let currentPage = 1;
@@ -286,7 +285,22 @@
   window.onload = function () {
     document.getElementById("app-content").style.display = "block";
     loadSheetData();
+    adjustMobileHeader();
   };
+
+  window.onresize = adjustMobileHeader;
+
+  function adjustMobileHeader() {
+    const btn = document.getElementById('mobileHeaderBtn');
+    const lastTh = document.querySelector('thead tr th:last-child');
+    if (window.innerWidth <= 768) {
+      btn.style.display = 'block';
+      lastTh.style.display = 'none';
+    } else {
+      btn.style.display = 'none';
+      lastTh.style.display = 'table-cell';
+    }
+  }
 
   async function loadSheetData() {
     try {
@@ -322,7 +336,6 @@
       }
       renderPage(currentPage);
 
-      // После успешной отправки меняем кнопку на текст "Отправлено"
       if (btn) {
         const parentTd = btn.parentElement;
         parentTd.removeChild(btn);
@@ -379,7 +392,6 @@
         }
         <td data-label="ОТПРАВИТЬ">
           <button id="btn_${row[0]}" onclick="validateAndSend(${row[0]}, this);">Отправить</button>
-          <!-- Кнопка Открыть для мобильной версии -->
           <a href="${schemaLink}" target="_blank" class="mobile-schema-button">Открыть</a>
         </td>
       `;
@@ -387,9 +399,7 @@
       tableBody.appendChild(tr);
     });
 
-    // В мобильной версии показываем кнопку "Открыть" внутри колонки отправки, в десктопной — скрываем
     toggleMobileSchemaButtons();
-
     applyHighlight();
     renderPageNumbers();
 
@@ -397,7 +407,6 @@
     document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= fullData.length;
   }
 
-  // Показывать/скрывать кнопку "Открыть" в мобильной версии
   function toggleMobileSchemaButtons() {
     const width = window.innerWidth;
     const buttons = document.querySelectorAll('.mobile-schema-button');
@@ -408,7 +417,10 @@
     }
   }
 
-  window.addEventListener('resize', toggleMobileSchemaButtons);
+  window.addEventListener('resize', () => {
+    toggleMobileSchemaButtons();
+    adjustMobileHeader();
+  });
 
   function renderPageNumbers() {
     const pageContainer = document.getElementById("pageNumbers");
