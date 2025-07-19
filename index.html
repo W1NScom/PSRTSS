@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>SMART MAINTENANCE BOWLING</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f0f2f5;
+      background-color: #f0f2f5;
       padding: 20px;
+      margin: 0;
     }
 
     h1 {
       text-align: center;
       color: #1f2937;
-      margin-bottom: 30px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      background-color: white;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     th, td {
-      border: 1px solid #ccc;
       padding: 10px;
+      border: 1px solid #ccc;
       text-align: left;
     }
 
@@ -35,42 +35,63 @@
       color: white;
     }
 
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
-      font-size: 14px;
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
 
-    button {
-      padding: 6px 10px;
-      background-color: #dc143c;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px;
+      border: 1px solid #ccc;
       border-radius: 4px;
     }
 
+    button {
+      padding: 6px 12px;
+      background-color: #dc143c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
     button:hover {
-      background-color: #a80f2d;
+      background-color: #a70f2c;
     }
 
     .status {
-      text-align: center;
-      margin-top: 20px;
-      color: #dc143c;
+      color: green;
       font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h1>SMART MAINTENANCE BOWLING</h1>
-  <div class="status" id="status">Загрузка данных...</div>
-  <table id="data-table" style="display:none;">
-    <thead>
-      <tr>
-        <th>№</th>
+  <div id="tableContainer">Загрузка...</div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz38lIp8NYu6nJb4ccc6Pl87bulLK2M9MpMSbnBtaMUrf7hoLXv2EbRZCB7a92PhmUA/exec';
+
+    async function loadData() {
+      try {
+        const res = await fetch(API_URL + '?action=getSheetData');
+        const data = await res.json();
+        renderTable(data);
+      } catch (e) {
+        document.getElementById("tableContainer").innerHTML = "<p style='color:red;'>Ошибка загрузки данных</p>";
+        console.error("Ошибка:", e);
+      }
+    }
+
+    function renderTable(data) {
+      if (!data.length) {
+        document.getElementById("tableContainer").innerHTML = "<p>Нет данных</p>";
+        return;
+      }
+
+      let html = `<table><thead><tr>
+        <th>Строка</th>
         <th>Машина</th>
         <th>Схема</th>
         <th>Открыта</th>
@@ -78,79 +99,54 @@
         <th>Выполнил</th>
         <th>Поломка</th>
         <th>Сохранить</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+      </tr></thead><tbody>`;
 
-  <script>
-    const endpoint = 'https://script.google.com/macros/s/AKfycbz38lIp8NYu6nJb4ccc6Pl87bulLK2M9MpMSbnBtaMUrf7hoLXv2EbRZCB7a92PhmUA/exec';
+      data.forEach(row => {
+        const [rowNumber, machine, schema, opened, closed, doneBy, breakdown] = row;
+        html += `<tr>
+          <td>${rowNumber}</td>
+          <td>${machine}</td>
+          <td><a href="${schema}" target="_blank">Схема</a></td>
+          <td>${opened}</td>
+          <td>${closed}</td>
+          <td><input type="text" id="doneBy-${rowNumber}" value="${doneBy}"></td>
+          <td><input type="text" id="breakdown-${rowNumber}" value="${breakdown}"></td>
+          <td><button onclick="saveRow(${rowNumber})">Сохранить</button></td>
+        </tr>`;
+      });
 
-    async function loadData() {
-      try {
-        const res = await fetch(endpoint);
-        const data = await res.json();
-
-        if (!data.length) throw new Error("Пустой ответ");
-
-        const tbody = document.querySelector("#data-table tbody");
-        tbody.innerHTML = "";
-        data.forEach(row => {
-          const tr = document.createElement("tr");
-
-          const [rowNumber, machine, schemaLink, opened, closed, doneBy, breakdown] = row;
-
-          tr.innerHTML = `
-            <td>${rowNumber}</td>
-            <td>${machine}</td>
-            <td><a href="${schemaLink}" target="_blank">Схема</a></td>
-            <td>${opened}</td>
-            <td>${closed}</td>
-            <td><input type="text" value="${doneBy}" /></td>
-            <td><textarea>${breakdown}</textarea></td>
-            <td><button onclick="saveRow(${rowNumber}, this)">💾</button></td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        document.getElementById("data-table").style.display = "";
-        document.getElementById("status").textContent = "";
-      } catch (e) {
-        document.getElementById("status").textContent = "Ошибка загрузки данных";
-        console.error(e);
-      }
+      html += "</tbody></table>";
+      document.getElementById("tableContainer").innerHTML = html;
     }
 
-    async function saveRow(rowNumber, btn) {
-      const row = btn.closest("tr");
-      const doneByValue = row.querySelector("input").value;
-      const breakdownValue = row.querySelector("textarea").value;
+    async function saveRow(rowNumber) {
+      const doneBy = document.getElementById(`doneBy-${rowNumber}`).value;
+      const breakdown = document.getElementById(`breakdown-${rowNumber}`).value;
 
-      const body = new URLSearchParams();
-      body.append("rowNumber", rowNumber);
-      body.append("doneByValue", doneByValue);
-      body.append("breakdownValue", breakdownValue);
+      const payload = {
+        action: 'updateSheet',
+        rowNumber: rowNumber,
+        doneByValue: doneBy,
+        breakdownValue: breakdown
+      };
 
       try {
-        btn.disabled = true;
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: body.toString()
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
 
-        const updatedRow = await res.json();
-        if (Array.isArray(updatedRow)) {
-          row.cells[4].textContent = updatedRow[4]; // D: закрыта
+        const updated = await res.json();
+        if (updated && updated.length) {
           alert("Сохранено!");
+          loadData(); // Перезагрузим таблицу
         } else {
-          alert("Ошибка сохранения");
+          alert("Ошибка при сохранении");
         }
       } catch (e) {
-        alert("Ошибка при сохранении");
-        console.error(e);
-      } finally {
-        btn.disabled = false;
+        console.error("Ошибка сохранения:", e);
+        alert("Ошибка при отправке данных");
       }
     }
 
