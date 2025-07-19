@@ -2,133 +2,315 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>TECH HUB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SMART MAINTENANCE BOWLING</title>
   <style>
-    body {
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    body, html {
+      height: 100%;
       margin: 0;
-      background-color: #f0f2f5;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px 10px;
+      font-family: "Poppins", sans-serif;
+      background-color: #f4f6f9;
+      color: #1a2f40;
     }
 
-    .selector-wrapper {
-      width: 90%;
-      max-width: 800px;
-      margin-bottom: 30px;
-    }
-
-    #locationSelector {
+    #app-content {
       width: 100%;
-      font-size: 40px;
-      padding: 40px 0;
-      text-align-last: center;
-      border-radius: 16px;
-      border: none;
-      background-color: #ffffff;
-      font-weight: 600;
-      color: #1f2937;
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-      transition: box-shadow 0.3s ease;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: none;
-      cursor: not-allowed;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 30px;
-      max-width: 800px;
-      width: 90%;
-    }
-
-    .menu-item {
-      position: relative;
-      background-color: #1f2937;
-      border-radius: 16px;
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      text-decoration: none;
-      font-size: 20px;
-      font-weight: 700;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 12px;
       text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    th {
+      background-color: #1a2f40;
+      color: white;
+      font-size: 18px;
+      text-transform: uppercase;
       cursor: pointer;
     }
 
-    .menu-item:hover {
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
-      z-index: 2;
+    tbody tr:nth-child(even) {
+      background-color: #eef2f7;
     }
 
-    .menu-item:active {
-      transform: scale(0.97);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    tbody tr:hover {
+      background-color: #dde2eb;
     }
 
-    .emoji-corner {
-      position: absolute;
-      bottom: -20px;
-      right: -20px;
-      font-size: 150px;
-      opacity: 0.15;
-      pointer-events: none;
-      user-select: none;
-      z-index: 0;
-    }
-
-    .title {
-      position: relative;
-      z-index: 10;
+    .schema-button {
+      background-color: #1a2f40;
       color: white;
-      user-select: none;
-      letter-spacing: 1px;
+      padding: 10px 15px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .schema-button:hover {
+      background-color: #143055;
+    }
+
+    select {
+      width: 95%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: white;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    select:hover {
+      border-color: #1a2f40;
+    }
+
+    button {
+      background-color: #dc143c;
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #a90e2e;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    #pageNumbers button {
+      background-color: #dc143c;
+      color: white;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
+    #pageNumbers button.active {
+      background-color: #1a2f40;
+    }
+
+    .highlight {
+      background-color: #dc143c !important;
+      color: white !important;
     }
   </style>
 </head>
 <body>
 
-  <div class="selector-wrapper">
-    <select id="locationSelector" disabled>
-      <option selected>BLOCKBUSTER</option>
-      <option>SKYMALL</option>
-      <option>LUCKY STRIKE KH</option>
-    </select>
-  </div>
+<div id="app-content" style="display:none;">
+  <table>
+    <thead>
+      <tr>
+        <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
+        <th onclick="startColumnSearch(1)">МАШИНА</th>
+        <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
+        <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
+        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
+        <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
+        <th>ОТПРАВИТЬ</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 
-  <div class="menu-grid">
-    <a class="menu-item" href="https://script.google.com/macros/s/AKfycbwtgSDGeTbgTbDunpGEU5tSx4rpjWxrCCAVlS8o4DpwueDrNwhbZ070_HzTwlPXSQw/exec" target="_blank">
-      <div class="title">SMB</div>
-      <div class="emoji-corner" style="transform: rotate(12deg);">🔧</div>
-    </a>
-    <a class="menu-item" href="https://example.com/fps" target="_blank">
-      <div class="title">ERROR REPORT</div>
-      <div class="emoji-corner" style="transform: rotate(20deg);">⚠️</div>
-    </a>
-    <a class="menu-item" href="https://script.google.com/macros/s/AKfycbwzPWiOMO_cn2zo4Ix1R1ATN2FtpUiMxn6Vmgm0WNx229Yz5i_QqD0X_fh8VjAXqZBh/exec" target="_blank">
-      <div class="title">PARTS</div>
-      <div class="emoji-corner" style="transform: rotate(25deg);">🔩</div>
-    </a>
-    <a class="menu-item" href="https://script.google.com/macros/s/AKfycbzyIlv-R8Ie-ZTAUNSFjMIPkQwBw34Yl3LkWu0fGx4YHGyo2RCSuik_bNwOd_TGHjpU/exec" target="_blank">
-      <div class="title">ADD PART</div>
-      <div class="emoji-corner" style="transform: rotate(18deg);">📦</div>
-    </a>
-    <a class="menu-item" href="https://script.google.com/macros/s/AKfycbyXGtubHygKnygpEN6K2KWtrhfu4fWr0hKwuVf10JNvYjEF6VOj8wgKuSxc105wk0KE/exec" target="_blank">
-      <div class="title">MANUAL</div>
-      <div class="emoji-corner" style="transform: rotate(10deg);">📒</div>
-    </a>
+  <div class="pagination">
+    <button onclick="prevPage()" id="prevBtn" disabled>← Назад</button>
+    <div id="pageNumbers" style="display: flex; gap: 10px;"></div>
+    <button onclick="nextPage()" id="nextBtn">Вперёд →</button>
   </div>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbz38lIp8NYu6nJb4ccc6Pl87bulLK2M9MpMSbnBtaMUrf7hoLXv2EbRZCB7a92PhmUA/exec";
+
+  let fullData = [];
+  let currentPage = 1;
+  const rowsPerPage = 20;
+  let activeSearchColumn = null;
+  let activeSearchText = "";
+
+  window.onload = function () {
+    document.getElementById("app-content").style.display = "block";
+    loadSheetData();
+  };
+
+  function loadSheetData() {
+    fetch(`${API_URL}?action=getSheetData`)
+      .then(res => res.json())
+      .then(data => {
+        fullData = data;
+        renderPage(currentPage);
+      })
+      .catch(err => {
+        document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Ошибка загрузки данных</td></tr>";
+        console.error(err);
+      });
+  }
+
+  function updateSheet(rowNumber, doneByValue, breakdownValue) {
+    fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ rowNumber, doneBy: doneByValue, breakdown: breakdownValue }),
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(res => res.json())
+      .then(updatedRow => {
+        const index = fullData.findIndex(row => row[0] === rowNumber);
+        if (index !== -1) fullData[index] = updatedRow;
+        renderPage(currentPage);
+      })
+      .catch(err => {
+        alert("Ошибка при отправке данных");
+        console.error(err);
+      });
+  }
+
+  function renderPage(page) {
+    const tableBody = document.getElementById("tableBody");
+    tableBody.innerHTML = "";
+
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageData = fullData.slice(start, end);
+
+    pageData.forEach((row) => {
+      const tr = document.createElement("tr");
+      const schemaLink = row[2] ? `<a href="${row[2]}" target="_blank"><button class="schema-button">Открыть</button></a>` : "Нет схемы";
+      tr.innerHTML = `<td>${schemaLink}</td><td>${row[1]}</td><td>${row[3]}</td><td>${row[4]}</td>`;
+
+      const doneBy = row[5] ? row[5] : "";
+      const breakdown = row[6] ? row[6] : "";
+
+      tr.innerHTML += doneBy
+        ? `<td>${doneBy}</td>`
+        : `<td id="gText_${row[0]}"><select id="g_${row[0]}">
+              <option value="" selected disabled></option>
+              <option value="Дима">Дима</option>
+              <option value="Женя">Женя</option>
+          </select></td>`;
+
+      tr.innerHTML += breakdown
+        ? `<td>${breakdown}</td>`
+        : `<td id="iText_${row[0]}"><select id="i_${row[0]}">
+              <option value="" selected disabled></option>
+              <option value="ЕСТЬ">ЕСТЬ</option>
+              <option value="НЕТ">НЕТ</option>
+          </select></td>`;
+
+      tr.innerHTML += `<td><button onclick="validateAndSend(${row[0]});">Отправить</button></td>`;
+      tableBody.appendChild(tr);
+    });
+
+    applyHighlight();
+    renderPageNumbers();
+
+    document.getElementById("prevBtn").disabled = currentPage === 1;
+    document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= fullData.length;
+  }
+
+  function renderPageNumbers() {
+    const pageContainer = document.getElementById("pageNumbers");
+    pageContainer.innerHTML = "";
+    const totalPages = Math.ceil(fullData.length / rowsPerPage);
+    let startPage = Math.max(currentPage - 2, 1);
+    let endPage = Math.min(startPage + 4, totalPages);
+    if (endPage - startPage < 4) startPage = Math.max(endPage - 4, 1);
+
+    for (let i = startPage; i <= endPage; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      if (i === currentPage) btn.classList.add("active");
+      btn.onclick = () => { currentPage = i; renderPage(currentPage); };
+      pageContainer.appendChild(btn);
+    }
+  }
+
+  function nextPage() {
+    if (currentPage * rowsPerPage < fullData.length) {
+      currentPage++;
+      renderPage(currentPage);
+    }
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      renderPage(currentPage);
+    }
+  }
+
+  function validateAndSend(rowNumber) {
+    const gSelect = document.getElementById(`g_${rowNumber}`);
+    const iSelect = document.getElementById(`i_${rowNumber}`);
+
+    if (!gSelect || !iSelect || !gSelect.value || !iSelect.value) {
+      alert("Заполните все формы!");
+      return;
+    }
+
+    updateSheet(rowNumber, gSelect.value, iSelect.value);
+  }
+
+  function startColumnSearch(columnIndex) {
+    const searchText = prompt("Введите текст для поиска:");
+    if (searchText === null || searchText.trim() === "") {
+      activeSearchColumn = null;
+      activeSearchText = "";
+    } else {
+      activeSearchColumn = columnIndex;
+      activeSearchText = searchText.trim().toLowerCase();
+    }
+    renderPage(currentPage);
+  }
+
+  function applyHighlight() {
+    if (activeSearchColumn === null || activeSearchText === "") return;
+    const rows = document.getElementById("tableBody").getElementsByTagName("tr");
+    for (let row of rows) {
+      const cell = row.getElementsByTagName("td")[activeSearchColumn];
+      if (!cell) continue;
+      const text = cell.textContent.toLowerCase();
+      cell.classList.toggle("highlight", text.includes(activeSearchText));
+    }
+  }
+</script>
 
 </body>
 </html>
