@@ -158,11 +158,12 @@
 </div>
 
 <script>
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwVIBmW6gYERv1i1UeywqDY01YOIkExPrH9EG_31w1a0u3BrNVUINT1cxGpznbgc5ws/exec'; // Вставь сюда свой URL из развертывания веб-приложения Google Apps Script
+
   let fullData = [];
   let currentPage = 1;
   const rowsPerPage = 20;
 
-  // Поиск
   let activeSearchColumn = null;
   let activeSearchText = "";
 
@@ -171,22 +172,43 @@
     loadSheetData();
   };
 
-  function loadSheetData() {
-    google.script.run.withSuccessHandler(function (response) {
-      try {
-        fullData = JSON.parse(response) || [];
-      } catch (e) {
-        document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Ошибка загрузки данных</td></tr>";
-        return;
-      }
-
+  async function loadSheetData() {
+    try {
+      const response = await fetch(`${GAS_URL}?action=getData`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      fullData = await response.json();
       if (fullData.length === 0) {
         document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Нет задач</td></tr>";
         return;
       }
-
       renderPage(currentPage);
-    }).getSheetData();
+    } catch (e) {
+      document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Ошибка загрузки данных</td></tr>";
+      console.error(e);
+    }
+  }
+
+  async function updateSheet(rowNumber, doneByValue, breakdownValue) {
+    try {
+      const params = new URLSearchParams({
+        action: 'update',
+        rowNumber,
+        doneByValue,
+        breakdownValue
+      });
+      const response = await fetch(`${GAS_URL}?${params.toString()}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const updatedRow = await response.json();
+
+      const index = fullData.findIndex(row => row[0] === rowNumber);
+      if (index !== -1) {
+        fullData[index] = updatedRow;
+      }
+      renderPage(currentPage);
+    } catch (e) {
+      alert('Ошибка при обновлении данных');
+      console.error(e);
+    }
   }
 
   function renderPage(page) {
@@ -195,20 +217,7 @@
 
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    let pageData = fullData.slice(start, end);
-
-    // Применяем поиск, если активен
-    if (activeSearchColumn !== null && activeSearchText !== "") {
-      pageData = pageData.filter(row => {
-        const cellText = row[activeSearchColumn + 1] ? row[activeSearchColumn + 1].toString().toLowerCase() : "";
-        return cellText.includes(activeSearchText);
-      });
-    }
-
-    if (pageData.length === 0) {
-      tableBody.innerHTML = "<tr><td colspan='7'>Нет данных для отображения</td></tr>";
-      return;
-    }
+    const pageData = fullData.slice(start, end);
 
     pageData.forEach((row) => {
       const tr = document.createElement("tr");
@@ -239,6 +248,7 @@
       tableBody.appendChild(tr);
     });
 
+    applyHighlight();
     renderPageNumbers();
 
     document.getElementById("prevBtn").disabled = currentPage === 1;
@@ -295,17 +305,6 @@
     updateSheet(rowNumber, gSelect.value, iSelect.value);
   }
 
-  function updateSheet(rowNumber, doneByValue, breakdownValue) {
-    google.script.run.withSuccessHandler((updatedRow) => {
-      // Обновляем локальный массив fullData с новой строкой
-      const index = fullData.findIndex(row => row[0] === rowNumber);
-      if (index !== -1) {
-        fullData[index] = updatedRow;
-      }
-      renderPage(currentPage);
-    }).updateSheet(rowNumber, doneByValue, breakdownValue);
-  }
-
   function startColumnSearch(columnIndex) {
     const searchText = prompt("Введите текст для поиска:");
     if (searchText === null || searchText.trim() === "") {
@@ -316,6 +315,26 @@
       activeSearchText = searchText.trim().toLowerCase();
     }
     renderPage(currentPage);
+  }
+
+  function applyHighlight() {
+    if (activeSearchColumn === null || activeSearchText === "") return;
+
+    const tableBody = document.getElementById("tableBody");
+    const rows = tableBody.getElementsByTagName("tr");
+
+    for (let row of rows) {
+      const cells = row.getElementsByTagName("td");
+      if (cells.length > activeSearchColumn) {
+        const cell = cells[activeSearchColumn];
+        const text = cell.textContent || cell.innerText;
+        if (text.toLowerCase().includes(activeSearchText)) {
+          cell.classList.add("highlight");
+        } else {
+          cell.classList.remove("highlight");
+        }
+      }
+    }
   }
 </script>
 
