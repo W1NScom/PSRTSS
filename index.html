@@ -1,219 +1,206 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>SMART MAINTENANCE BOWLING</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMART MAINTENANCE BOWLING</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-  body, html {
-    margin: 0; padding: 0;
-    font-family: "Poppins", sans-serif;
-    background-color: #f4f6f9;
-    color: #1a2f40;
-  }
-
-  /* ОБЩИЕ СТИЛИ ТАБЛИЦЫ */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-
-  th, td {
-    padding: 12px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 16px;
-  }
-
-  th {
-    background-color: #1a2f40;
-    color: white;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  tbody tr:nth-child(even) {
-    background-color: #eef2f7;
-  }
-
-  tbody tr:hover {
-    background-color: #dde2eb;
-  }
-
-  button, select {
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 16px;
-  }
-
-  button {
-    background-color: #dc143c;
-    color: white;
-    padding: 10px 15px;
-    transition: background-color 0.2s ease;
-  }
-
-  button:hover {
-    background-color: #a90e2e;
-  }
-
-  select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    background: white;
-    text-align: center;
-  }
-
-  select:hover {
-    border-color: #1a2f40;
-  }
-
-  .schema-button {
-    background-color: #1a2f40;
-    color: white;
-    padding: 10px 15px;
-    font-size: 16px;
-    font-weight: 700;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .schema-button:hover {
-    background-color: #143055;
-  }
-
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-
-  .pagination button {
-    background-color: #dc143c;
-    color: white;
-    font-weight: 700;
-    border-radius: 6px;
-    padding: 10px 15px;
-    cursor: pointer;
-  }
-
-  .pagination button.active {
-    background-color: #1a2f40;
-  }
-
-  .highlight {
-    background-color: #dc143c !important;
-    color: white !important;
-  }
-
-  /* Мобильная версия - меняем таблицу на карточки */
-  @media (max-width: 768px) {
-    table, thead, tbody, th, td, tr {
-      display: block;
-      width: 100%;
-    }
-
-    thead tr {
-      display: none;
-    }
-
-    tbody tr {
-      background: white;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 12px;
-      box-sizing: border-box;
-      user-select: none;
-    }
-
-    tbody tr:nth-child(even),
-    tbody tr:hover {
-      background: white;
-    }
-
-    tbody td {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 8px;
-      border-bottom: 1px solid #ddd;
-      font-weight: 700;
-      font-size: 13px;
-      text-align: left;
-      white-space: normal;
-      word-break: break-word;
-    }
-
-    tbody td:last-child {
-      border-bottom: none;
-    }
-
-    tbody td::before {
-      content: attr(data-label);
-      font-weight: 700;
-      color: #1a2f40;
-      flex-basis: 40%;
-      max-width: 40%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    tbody td[data-label="ОТПРАВИТЬ"]::before {
-      content: none !important;
-    }
-
-    button, select, .schema-button {
-      font-size: 13px;
-      padding: 5px 8px;
-      font-weight: 700;
-    }
-
-    tbody tr > td:last-child {
+    body, html {
+      height: 100%;
+      margin: 0;
       padding: 0;
-      border: none;
+      font-family: "Poppins", sans-serif;
+      background-color: #f4f6f9;
+      color: #1a2f40;
     }
 
-    tbody tr > td:last-child .buttons-row {
-      display: flex;
-      justify-content: space-between;
+    #app-content {
       width: 100%;
-      margin-top: 10px;
-      gap: 10px;
+      padding: 20px;
+      box-sizing: border-box;
+      display: none;
+      max-width: 100vw;
     }
 
-    tbody tr > td:last-child .buttons-row .schema-button,
-    tbody tr > td:last-child .buttons-row button,
-    tbody tr > td:last-child .buttons-row span.sent-text {
-      flex: 1;
-      max-width: 48%;
-      padding: 8px 10px;
+    /* Универсальные стили таблицы */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      table-layout: fixed;
+    }
+    th, td {
+      padding: 12px;
       text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+    th {
+      background-color: #1a2f40;
+      color: white;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #eef2f7;
+    }
+    tbody tr:hover {
+      background-color: #dde2eb;
     }
 
-    tbody tr > td:last-child .buttons-row span.sent-text {
-      color: #444;
+    .schema-button {
+      background-color: #1a2f40;
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-decoration: none;
       display: inline-block;
     }
-  }
-</style>
+    .schema-button:hover {
+      background-color: #143055;
+    }
+
+    select, button {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    select:hover {
+      border-color: #1a2f40;
+    }
+    button {
+      background-color: #dc143c;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #a90e2e;
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    #pageNumbers button {
+      background-color: #dc143c;
+      color: white;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 15px;
+    }
+    #pageNumbers button.active {
+      background-color: #1a2f40;
+    }
+
+    .highlight {
+      background-color: #dc143c !important;
+      color: white !important;
+    }
+
+    /* Стили для мобильных */
+    @media (max-width: 768px) {
+      #app-content { padding: 10px 5px; }
+      th, td { padding: 6px 8px; font-size: clamp(10px, 2.5vw, 12px); }
+      .schema-button { padding: 4px 6px; font-size: clamp(9px, 2.5vw, 12px); border-radius: 4px; }
+      select, button { padding: 4px 6px; font-size: clamp(9px, 2.5vw, 12px); border-radius: 4px; }
+      .pagination { margin-top: 15px; gap: 10px; }
+      #pageNumbers button { padding: 8px 12px; }
+
+      table, thead, tbody, th, td, tr { display: block; width: 100%; }
+      thead tr { display: none; }
+      tbody tr {
+        margin-bottom: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 12px;
+        box-sizing: border-box;
+        user-select: none;
+      }
+      tbody tr:nth-child(even), tbody tr:hover { background-color: white; }
+      td {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+      }
+      td:last-child { border-bottom: none; padding: 0; }
+      td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #1a2f40;
+        flex-basis: 40%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      td[data-label="ОТПРАВИТЬ"]::before { content: none !important; }
+      .buttons-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 10px;
+        gap: 10px;
+      }
+      .buttons-row .schema-button,
+      .buttons-row button,
+      .buttons-row span {
+        flex: 1;
+        max-width: 48%;
+        text-align: center;
+      }
+      .buttons-row span.sent-text { color: #444; padding: 8px 10px; }
+    }
+  </style>
 </head>
 <body>
+<div id="app-content">
+  <table>
+    <thead>
+      <tr>
+        <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
+        <th onclick="startColumnSearch(1)">МАШИНА</th>
+        <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
+        <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
+        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
+        <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
+        <th>ОТПРАВИТЬ</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 
-<div id="app-content" style="display:none;">
-  <!-- Контент будет вставлен JS -->
+  <div class="pagination">
+    <button onclick="prevPage()" id="prevBtn" disabled>← Назад</button>
+    <div id="pageNumbers"></div>
+    <button onclick="nextPage()" id="nextBtn">Вперёд →</button>
+  </div>
 </div>
 
 <script>
@@ -222,254 +209,127 @@
   let fullData = [];
   let currentPage = 1;
   const rowsPerPage = 20;
-
   let activeSearchColumn = null;
   let activeSearchText = "";
 
-  const appContent = document.getElementById('app-content');
-
-  function renderLayout() {
-    // Единственная верстка — адаптивная, с моб стилями в CSS
-    appContent.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
-            <th onclick="startColumnSearch(1)">МАШИНА</th>
-            <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
-            <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
-            <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
-            <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
-            <th>ОТПРАВИТЬ</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-
-      <div class="pagination">
-        <button onclick="prevPage()" id="prevBtn" disabled>← Назад</button>
-        <div id="pageNumbers"></div>
-        <button onclick="nextPage()" id="nextBtn">Вперёд →</button>
-      </div>
-    `;
-  }
+  window.onload = () => {
+    document.getElementById('app-content').style.display = 'block';
+    loadSheetData();
+  };
 
   async function loadSheetData() {
     try {
-      const response = await fetch(`${GAS_URL}?action=getData`);
-      if (!response.ok) throw new Error('Ошибка сети');
-      const data = await response.json();
-      if (!Array.isArray(data)) throw new Error('Неверный формат данных');
-      fullData = data;
-      currentPage = 1;
+      const res = await fetch(`${GAS_URL}?action=getData`);
+      if (!res.ok) throw new Error('Network response was not ok');
+      fullData = await res.json();
+      if (!fullData.length) {
+        tableBody.innerHTML = `<tr><td colspan='7'>Нет задач</td></tr>`;
+        return;
+      }
       renderPage(currentPage);
-      renderPageNumbers();
-      appContent.style.display = "block";
     } catch (e) {
-      appContent.innerHTML = `<p style="color:red; padding:20px;">Ошибка загрузки данных:<br>${e.message}</p>`;
+      tableBody.innerHTML = `<tr><td colspan='7'>Ошибка загрузки данных</td></tr>`;
+      console.error(e);
+    }
+  }
+
+  async function updateSheet(rowNumber, doneByValue, breakdownValue) {
+    try {
+      const params = new URLSearchParams({ action: 'update', rowNumber, doneByValue, breakdownValue });
+      const res = await fetch(`${GAS_URL}?${params}`);
+      if (!res.ok) throw new Error('Network response was not ok');
+      const updated = await res.json();
+      const idx = fullData.findIndex(r => r[0] === rowNumber);
+      if (idx > -1) fullData[idx] = updated;
+      renderPage(currentPage);
+    } catch (e) {
+      alert('Ошибка при обновлении данных');
       console.error(e);
     }
   }
 
   function renderPage(page) {
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = "";
-
-    if (fullData.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7">Нет задач</td></tr>`;
-      return;
-    }
-
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
     const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = fullData.slice(start, end);
+    const pageData = fullData.slice(start, start + rowsPerPage);
 
     pageData.forEach(row => {
-      // row: [rowNumber, machine, schemaLink, openDate, closeDate, doneBy, breakdown]
-      const tr = document.createElement("tr");
-
-      // Ссылка на схему
-      const schemaLink = row[2]
-        ? `<a href="${row[2]}" target="_blank" class="schema-button">Открыть</a>`
-        : "Нет схемы";
-
-      // Выполнил
-      const doneByCell = row[5]
-        ? `<td data-label="ВЫПОЛНИЛ">${row[5]}</td>`
-        : `<td data-label="ВЫПОЛНИЛ" id="gText_${row[0]}">
-             <select id="g_${row[0]}">
-               <option value="" selected disabled></option>
-               <option value="Дима">Дима</option>
-               <option value="Женя">Женя</option>
-             </select>
-           </td>`;
-
-      // Поломка
-      const breakdownCell = row[6]
-        ? `<td data-label="ПОЛОМКА">${row[6]}</td>`
-        : `<td data-label="ПОЛОМКА" id="iText_${row[0]}">
-             <select id="i_${row[0]}">
-               <option value="" selected disabled></option>
-               <option value="ЕСТЬ">ЕСТЬ</option>
-               <option value="НЕТ">НЕТ</option>
-             </select>
-           </td>`;
+      const [id, machine, link, open, close, doneBy, breakdown] = row;
+      const tr = document.createElement('tr');
+      const schemaBtn = link ? `<a href="${link}" target="_blank" class="schema-button">Открыть</a>` : '';
 
       tr.innerHTML = `
-        <td data-label="ЗАДАЧА">${schemaLink}</td>
-        <td data-label="МАШИНА">${row[1]}</td>
-        <td data-label="ОТКРЫТА">${row[3]}</td>
-        <td data-label="ЗАКРЫТА">${row[4]}</td>
-        ${doneByCell}
-        ${breakdownCell}
+        <td data-label="ЗАДАЧА">${schemaBtn || 'Нет схемы'}</td>
+        <td data-label="МАШИНА">${machine}</td>
+        <td data-label="ОТКРЫТА">${open}</td>
+        <td data-label="ЗАКРЫТА">${close}</td>
+        ${breakdown
+          ? `<td data-label="ПОЛОМКА">${breakdown}</td>`
+          : `<td data-label="ПОЛОМКА"><select id="i_${id}"><option disabled selected></option><option>ЕСТЬ</option><option>НЕТ</option></select></td>`}
+        ${doneBy
+          ? `<td data-label="ВЫПОЛНИЛ">${doneBy}</td>`
+          : `<td data-label="ВЫПОЛНИЛ"><select id="g_${id}"><option disabled selected></option><option>Дима</option><option>Женя</option></select></td>`}
         <td data-label="ОТПРАВИТЬ">
-          ${row[5] && row[6]
-            ? '<span class="sent-text">Отправлено</span>'
-            : `<button id="btn_${row[0]}" onclick="validateAndSend(${row[0]});">Отправить</button>`
-          }
-        </td>
-      `;
-
+          <div class="buttons-row">
+            ${schemaBtn}
+            ${doneBy && breakdown
+              ? '<span class="sent-text">Отправлено</span>'
+              : `<button id="btn_${id}" onclick="validateAndSend(${id})">Отправить</button>`}
+          </div>
+        </td>`;
       tbody.appendChild(tr);
     });
 
-    document.getElementById("prevBtn").disabled = page === 1;
-    document.getElementById("nextBtn").disabled = page * rowsPerPage >= fullData.length;
-
     applyHighlight();
+    renderPageNumbers();
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage * rowsPerPage >= fullData.length;
   }
 
   function renderPageNumbers() {
-    const pageContainer = document.getElementById("pageNumbers");
-    pageContainer.innerHTML = "";
-
-    const totalPages = Math.ceil(fullData.length / rowsPerPage);
-    if (totalPages <= 1) return;
-
-    let startPage = Math.max(currentPage - 2, 1);
-    let endPage = Math.min(startPage + 4, totalPages);
-
-    if (endPage - startPage < 4) {
-      startPage = Math.max(endPage - 4, 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      const btn = document.createElement("button");
+    const container = document.getElementById('pageNumbers');
+    container.innerHTML = '';
+    const total = Math.ceil(fullData.length / rowsPerPage);
+    let start = Math.max(currentPage - 2, 1);
+    let end = Math.min(start + 4, total);
+    if (end - start < 4) start = Math.max(end - 4, 1);
+    for (let i = start; i <= end; i++) {
+      const btn = document.createElement('button');
       btn.textContent = i;
-      if (i === currentPage) btn.classList.add("active");
-      btn.onclick = () => {
-        currentPage = i;
-        renderPage(currentPage);
-        renderPageNumbers();
-      };
-      pageContainer.appendChild(btn);
+      if (i === currentPage) btn.classList.add('active');
+      btn.onclick = () => { currentPage = i; renderPage(i); };
+      container.appendChild(btn);
     }
   }
 
-  function nextPage() {
-    if (currentPage * rowsPerPage < fullData.length) {
-      currentPage++;
-      renderPage(currentPage);
-      renderPageNumbers();
-    }
+  function nextPage() { if (currentPage * rowsPerPage < fullData.length) currentPage++ && renderPage(currentPage); }
+  function prevPage() { if (currentPage > 1) currentPage-- && renderPage(currentPage); }
+
+  function validateAndSend(id) {
+    const g = document.getElementById(`g_${id}`);
+    const i = document.getElementById(`i_${id}`);
+    if (!g?.value || !i?.value) return alert('Заполните все формы!');
+    updateSheet(id, g.value, i.value);
+    const btn = document.getElementById(`btn_${id}`);
+    btn.outerHTML = '<span class="sent-text">Отправлено</span>';
   }
 
-  function prevPage() {
-    if (currentPage > 1) {
-      currentPage--;
-      renderPage(currentPage);
-      renderPageNumbers();
-    }
-  }
-
-  async function validateAndSend(rowNumber) {
-    const gSelect = document.getElementById(`g_${rowNumber}`);
-    const iSelect = document.getElementById(`i_${rowNumber}`);
-
-    if (!gSelect || !iSelect || !gSelect.value || !iSelect.value) {
-      alert("Заполните все формы!");
-      return;
-    }
-
-    try {
-      const params = new URLSearchParams({
-        action: 'update',
-        rowNumber,
-        doneByValue: gSelect.value,
-        breakdownValue: iSelect.value
-      });
-
-      const response = await fetch(`${GAS_URL}?${params.toString()}`);
-      if (!response.ok) throw new Error('Ошибка при обновлении данных');
-
-      const updatedRow = await response.json();
-
-      // Обновим локальные данные
-      const idx = fullData.findIndex(row => row[0] === rowNumber);
-      if (idx !== -1) {
-        fullData[idx] = updatedRow;
-      }
-
-      renderPage(currentPage);
-
-    } catch (e) {
-      alert("Ошибка при отправке данных");
-      console.error(e);
-    }
-  }
-
-  function startColumnSearch(columnIndex) {
-    const searchText = prompt("Введите текст для поиска:");
-    if (searchText === null || searchText.trim() === "") {
-      activeSearchColumn = null;
-      activeSearchText = "";
-      // Сброс — загрузить данные заново
-      loadSheetData();
-      return;
-    }
-    activeSearchColumn = columnIndex;
-    activeSearchText = searchText.trim().toLowerCase();
-
-    // Фильтрация данных локально
-    fullData = fullData.filter(row => {
-      if (!row[columnIndex]) return false;
-      return row[columnIndex].toString().toLowerCase().includes(activeSearchText);
-    });
-
-    currentPage = 1;
+  function startColumnSearch(idx) {
+    const text = prompt('Введите текст для поиска:');
+    if (!text) { activeSearchColumn = null; activeSearchText = ''; }
+    else { activeSearchColumn = idx; activeSearchText = text.trim().toLowerCase(); }
     renderPage(currentPage);
-    renderPageNumbers();
   }
 
   function applyHighlight() {
-    if (activeSearchColumn === null || activeSearchText === "") return;
-
-    const tbody = document.getElementById("tableBody");
-    const rows = tbody.getElementsByTagName("tr");
-
-    for (let row of rows) {
-      const cells = row.getElementsByTagName("td");
-      if (cells.length > activeSearchColumn) {
-        const cell = cells[activeSearchColumn];
-        const text = cell.textContent || cell.innerText;
-        if (text.toLowerCase().includes(activeSearchText)) {
-          cell.classList.add("highlight");
-        } else {
-          cell.classList.remove("highlight");
-        }
-      }
-    }
-  }
-
-  window.addEventListener('resize', () => {
-    // Просто для адаптивности — CSS всё сделает
-  });
-
-  window.onload = () => {
-    renderLayout();
-    loadSheetData();
+    if (activeSearchColumn === null) return;
+    document.querySelectorAll('#tableBody tr').forEach(tr => {
+      const td = tr.children[activeSearchColumn];
+      if (td && td.textContent.toLowerCase().includes(activeSearchText)) td.classList.add('highlight');
+      else td?.classList.remove('highlight');
+    });
   }
 </script>
-
 </body>
 </html>
