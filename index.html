@@ -13,7 +13,8 @@
       font-family: "Poppins", sans-serif;
       background-color: #f4f6f9;
       color: #1a2f40;
-      -webkit-text-size-adjust: 100%; /* предотвращаем авто-зум в мобильных */
+      -webkit-text-size-adjust: 100%;
+      font-size: clamp(14px, 2vw, 16px);
     }
 
     #app-content {
@@ -22,6 +23,7 @@
       margin: 0 auto;
       padding: 10px 15px;
       box-sizing: border-box;
+      font-size: inherit;
     }
 
     /* Обертка для горизонтального скролла */
@@ -36,31 +38,31 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: fixed; /* фиксированная ширина колонок */
-      min-width: 700px; /* чтобы не слишком уж сжималось */
+      table-layout: fixed;
+      min-width: 700px;
       border-radius: 12px;
       overflow: hidden;
+      font-size: inherit;
     }
 
     th, td {
       padding: 10px 8px;
       text-align: center;
-      font-size: 14px;
       font-weight: 600;
       word-wrap: break-word;
-      /* ограничение высоты строк */
       max-width: 150px;
       overflow-wrap: anywhere;
+      font-size: clamp(12px, 1.5vw, 14px);
     }
 
     th {
       background-color: #1a2f40;
       color: white;
-      font-size: 15px;
       text-transform: uppercase;
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
+      font-size: clamp(13px, 1.6vw, 15px);
     }
 
     tbody tr:nth-child(even) {
@@ -75,13 +77,13 @@
       background-color: #1a2f40;
       color: white;
       padding: 7px 12px;
-      font-size: 14px;
       font-weight: 700;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       transition: 0.2s ease;
       white-space: nowrap;
+      font-size: clamp(12px, 1.5vw, 14px);
     }
 
     .schema-button:hover {
@@ -94,10 +96,10 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       background: white;
-      font-size: 14px;
       text-align: center;
       box-sizing: border-box;
       cursor: pointer;
+      font-size: clamp(12px, 1.5vw, 14px);
     }
 
     select:hover {
@@ -108,13 +110,13 @@
       background-color: #dc143c;
       color: white;
       padding: 8px 12px;
-      font-size: 14px;
       font-weight: 700;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s ease;
       white-space: nowrap;
+      font-size: clamp(12px, 1.5vw, 14px);
     }
 
     button:hover {
@@ -132,6 +134,7 @@
       margin-top: 15px;
       gap: 10px;
       flex-wrap: wrap;
+      font-size: clamp(12px, 1.5vw, 14px);
     }
 
     #pageNumbers button {
@@ -143,7 +146,7 @@
       padding: 8px 12px;
       cursor: pointer;
       min-width: 36px;
-      font-size: 14px;
+      font-size: inherit;
     }
 
     #pageNumbers button.active {
@@ -156,30 +159,22 @@
       font-weight: 700;
     }
 
-    /* Медиазапросы для мобильных */
+    /* Медиазапросы для улучшений на маленьких экранах */
     @media (max-width: 768px) {
+      table {
+        min-width: 600px;
+      }
       th, td {
-        font-size: 12px;
-        padding: 8px 6px;
         max-width: 100px;
       }
       .schema-button, button {
         padding: 6px 10px;
-        font-size: 12px;
       }
       select {
-        font-size: 12px;
         padding: 5px 6px;
-      }
-      #app-content {
-        padding: 10px 8px;
-      }
-      table {
-        min-width: 600px;
       }
       #pageNumbers button {
         padding: 6px 8px;
-        font-size: 12px;
         min-width: 30px;
       }
     }
@@ -194,15 +189,12 @@
       }
       .schema-button, button {
         padding: 5px 8px;
-        font-size: 11px;
       }
       select {
-        font-size: 11px;
         padding: 4px 5px;
       }
       #pageNumbers button {
         padding: 5px 6px;
-        font-size: 11px;
         min-width: 26px;
       }
     }
