@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>SMART MAINTENANCE BOWLING</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f2f5;
-      padding: 20px;
+      background: #f0f2f5;
       margin: 0;
+      padding: 20px;
     }
 
     h1 {
       text-align: center;
       color: #1f2937;
+      margin-bottom: 20px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
       text-align: left;
     }
 
@@ -39,12 +39,12 @@
       background-color: #f9f9f9;
     }
 
-    input[type="text"] {
+    input, textarea {
       width: 100%;
-      box-sizing: border-box;
-      padding: 6px;
+      padding: 6px 10px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      font-size: 14px;
     }
 
     button {
@@ -52,101 +52,92 @@
       background-color: #dc143c;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
     }
 
     button:hover {
-      background-color: #a70f2c;
-    }
-
-    .status {
-      color: green;
-      font-weight: bold;
+      background-color: #a80e2d;
     }
   </style>
 </head>
 <body>
   <h1>SMART MAINTENANCE BOWLING</h1>
-  <div id="tableContainer">Загрузка...</div>
 
-  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbz38lIp8NYu6nJb4ccc6Pl87bulLK2M9MpMSbnBtaMUrf7hoLXv2EbRZCB7a92PhmUA/exec';
-
-    async function loadData() {
-      try {
-        const res = await fetch(API_URL + '?action=getSheetData');
-        const data = await res.json();
-        renderTable(data);
-      } catch (e) {
-        document.getElementById("tableContainer").innerHTML = "<p style='color:red;'>Ошибка загрузки данных</p>";
-        console.error("Ошибка:", e);
-      }
-    }
-
-    function renderTable(data) {
-      if (!data.length) {
-        document.getElementById("tableContainer").innerHTML = "<p>Нет данных</p>";
-        return;
-      }
-
-      let html = `<table><thead><tr>
-        <th>Строка</th>
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th>#</th>
         <th>Машина</th>
         <th>Схема</th>
         <th>Открыта</th>
         <th>Закрыта</th>
-        <th>Выполнил</th>
+        <th>Кто сделал</th>
         <th>Поломка</th>
         <th>Сохранить</th>
-      </tr></thead><tbody>`;
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-      data.forEach(row => {
-        const [rowNumber, machine, schema, opened, closed, doneBy, breakdown] = row;
-        html += `<tr>
-          <td>${rowNumber}</td>
-          <td>${machine}</td>
-          <td><a href="${schema}" target="_blank">Схема</a></td>
-          <td>${opened}</td>
-          <td>${closed}</td>
-          <td><input type="text" id="doneBy-${rowNumber}" value="${doneBy}"></td>
-          <td><input type="text" id="breakdown-${rowNumber}" value="${breakdown}"></td>
-          <td><button onclick="saveRow(${rowNumber})">Сохранить</button></td>
-        </tr>`;
-      });
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz38lIp8NYu6nJb4ccc6Pl87bulLK2M9MpMSbnBtaMUrf7hoLXv2EbRZCB7a92PhmUA/exec';
 
-      html += "</tbody></table>";
-      document.getElementById("tableContainer").innerHTML = html;
+    async function loadData() {
+      try {
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+
+        const tbody = document.querySelector('#taskTable tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(row => {
+          const [rowNumber, machine, schemaLink, opened, closed, doneBy, breakdown] = row;
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td>${rowNumber}</td>
+            <td>${machine}</td>
+            <td><a href="${schemaLink}" target="_blank">Схема</a></td>
+            <td>${opened}</td>
+            <td>${closed}</td>
+            <td><input type="text" value="${doneBy}" /></td>
+            <td><textarea>${breakdown}</textarea></td>
+            <td><button onclick="saveRow(this, ${rowNumber})">💾</button></td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        alert('Ошибка загрузки данных. Проверьте доступ к Apps Script.');
+      }
     }
 
-    async function saveRow(rowNumber) {
-      const doneBy = document.getElementById(`doneBy-${rowNumber}`).value;
-      const breakdown = document.getElementById(`breakdown-${rowNumber}`).value;
+    async function saveRow(button, rowNumber) {
+      const tr = button.closest('tr');
+      const doneBy = tr.querySelector('input').value.trim();
+      const breakdown = tr.querySelector('textarea').value.trim();
 
-      const payload = {
-        action: 'updateSheet',
-        rowNumber: rowNumber,
-        doneByValue: doneBy,
-        breakdownValue: breakdown
-      };
+      const body = new URLSearchParams();
+      body.append('rowNumber', rowNumber);
+      body.append('doneByValue', doneBy);
+      body.append('breakdownValue', breakdown);
 
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(scriptURL + '?action=update', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: body
         });
 
         const updated = await res.json();
-        if (updated && updated.length) {
-          alert("Сохранено!");
-          loadData(); // Перезагрузим таблицу
-        } else {
-          alert("Ошибка при сохранении");
-        }
-      } catch (e) {
-        console.error("Ошибка сохранения:", e);
-        alert("Ошибка при отправке данных");
+        loadData();
+      } catch (error) {
+        console.error('Ошибка при обновлении строки:', error);
+        alert('Ошибка обновления данных');
       }
     }
 
