@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SMART MAINTENANCE BOWLING</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -138,12 +138,12 @@
   <table>
     <thead>
       <tr>
-        <th onclick="startColumnSearch(2)">ЗАДАЧА</th>
+        <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
         <th onclick="startColumnSearch(1)">МАШИНА</th>
-        <th onclick="startColumnSearch(3)">ОТКРЫТА</th>
-        <th onclick="startColumnSearch(4)">ЗАКРЫТА</th>
-        <th onclick="startColumnSearch(5)">ВЫПОЛНИЛ</th>
-        <th onclick="startColumnSearch(6)">ПОЛОМКА</th>
+        <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
+        <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
+        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
+        <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
         <th>ОТПРАВИТЬ</th>
       </tr>
     </thead>
@@ -193,18 +193,22 @@
     const tableBody = document.getElementById("tableBody");
     tableBody.innerHTML = "";
 
-    // Фильтрация если активен поиск
-    let filteredData = fullData;
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    let pageData = fullData.slice(start, end);
+
+    // Применяем поиск, если активен
     if (activeSearchColumn !== null && activeSearchText !== "") {
-      filteredData = fullData.filter(row => {
-        const cellText = row[activeSearchColumn] ? row[activeSearchColumn].toString().toLowerCase() : "";
+      pageData = pageData.filter(row => {
+        const cellText = row[activeSearchColumn + 1] ? row[activeSearchColumn + 1].toString().toLowerCase() : "";
         return cellText.includes(activeSearchText);
       });
     }
 
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = filteredData.slice(start, end);
+    if (pageData.length === 0) {
+      tableBody.innerHTML = "<tr><td colspan='7'>Нет данных для отображения</td></tr>";
+      return;
+    }
 
     pageData.forEach((row) => {
       const tr = document.createElement("tr");
@@ -235,20 +239,17 @@
       tableBody.appendChild(tr);
     });
 
-    applyHighlight();
-    renderPageNumbers(filteredData.length);
+    renderPageNumbers();
 
     document.getElementById("prevBtn").disabled = currentPage === 1;
-    document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= filteredData.length;
+    document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= fullData.length;
   }
 
-  function renderPageNumbers(totalItems) {
+  function renderPageNumbers() {
     const pageContainer = document.getElementById("pageNumbers");
     pageContainer.innerHTML = "";
 
-    const totalPages = Math.ceil(totalItems / rowsPerPage);
-    if(totalPages === 0) return;
-
+    const totalPages = Math.ceil(fullData.length / rowsPerPage);
     let startPage = Math.max(currentPage - 2, 1);
     let endPage = Math.min(startPage + 4, totalPages);
 
@@ -269,13 +270,17 @@
   }
 
   function nextPage() {
-    currentPage++;
-    renderPage(currentPage);
+    if (currentPage * rowsPerPage < fullData.length) {
+      currentPage++;
+      renderPage(currentPage);
+    }
   }
 
   function prevPage() {
-    currentPage--;
-    renderPage(currentPage);
+    if (currentPage > 1) {
+      currentPage--;
+      renderPage(currentPage);
+    }
   }
 
   function validateAndSend(rowNumber) {
@@ -292,6 +297,7 @@
 
   function updateSheet(rowNumber, doneByValue, breakdownValue) {
     google.script.run.withSuccessHandler((updatedRow) => {
+      // Обновляем локальный массив fullData с новой строкой
       const index = fullData.findIndex(row => row[0] === rowNumber);
       if (index !== -1) {
         fullData[index] = updatedRow;
@@ -309,28 +315,7 @@
       activeSearchColumn = columnIndex;
       activeSearchText = searchText.trim().toLowerCase();
     }
-    currentPage = 1;
     renderPage(currentPage);
-  }
-
-  function applyHighlight() {
-    if (activeSearchColumn === null || activeSearchText === "") return;
-
-    const tableBody = document.getElementById("tableBody");
-    const rows = tableBody.getElementsByTagName("tr");
-
-    for (let row of rows) {
-      const cells = row.getElementsByTagName("td");
-      if (cells.length > activeSearchColumn) {
-        const cell = cells[activeSearchColumn];
-        const text = cell.textContent || cell.innerText;
-        if (text.toLowerCase().includes(activeSearchText)) {
-          cell.classList.add("highlight");
-        } else {
-          cell.classList.remove("highlight");
-        }
-      }
-    }
   }
 </script>
 
