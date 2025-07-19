@@ -82,6 +82,34 @@
     background-color: #a90e2e;
   }
 
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  #pageNumbers button {
+    background-color: #dc143c;
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  #pageNumbers button.active {
+    background-color: #1a2f40;
+  }
+
+  .highlight {
+    background-color: #dc143c !important;
+    color: white !important;
+  }
+
   /* Скрываем колонки "ЗАКРЫТА" и "ПОЛОМКА" на узких экранах */
   @media (max-width: 480px) {
     th:nth-child(4), td:nth-child(4), /* ЗАКРЫТА */
@@ -124,7 +152,7 @@
 </div>
 
 <script>
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwVIBmW6gYERv1i1UeywqDY01YOIkExPrH9EG_31w1a0u3BrNVUINT1cxGpznbgc5ws/exec'; // Вставь свой URL
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwVIBmW6gYERv1i1UeywqDY01YOIkExPrH9EG_31w1a0u3BrNVUINT1cxGpznbgc5ws/exec'; // Вставь сюда свой URL из веб-приложения
 
   let fullData = [];
   let currentPage = 1;
