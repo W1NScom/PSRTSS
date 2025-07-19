@@ -17,39 +17,34 @@
 
   #app-content {
     width: 100%;
-    padding: 12px 10px;
+    padding: 10px 5px;
     box-sizing: border-box;
     max-width: 100vw;
   }
 
-  /* Таблица для десктопа */
+  /* Стили для десктопа - обычная таблица */
   table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     table-layout: fixed;
   }
 
   th, td {
-    padding: 8px 10px;
+    padding: 6px 8px;
     text-align: center;
     font-weight: 600;
     word-wrap: break-word;
     white-space: normal;
-    font-size: clamp(11px, 1.8vw, 13px);
+    font-size: clamp(10px, 2.5vw, 12px);
   }
 
   thead th {
     background-color: #1a2f40;
     color: white;
     cursor: pointer;
-    user-select: none;
-    transition: background-color 0.25s ease;
-  }
-  thead th:hover {
-    background-color: #143055;
   }
 
   tbody tr:nth-child(even) {
@@ -57,35 +52,24 @@
   }
 
   tbody tr:hover {
-    background-color: #d3dae4;
+    background-color: #dde2eb;
   }
 
   .schema-button {
     background-color: #1a2f40;
     color: white;
-    padding: 6px 10px;
+    padding: 4px 6px;
     font-weight: 700;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: clamp(10px, 2vw, 13px);
-    transition: background-color 0.3s ease;
-  }
-  .schema-button:hover {
-    background-color: #143055;
+    font-size: clamp(9px, 2.5vw, 12px);
   }
 
   select, button {
-    font-size: clamp(10px, 2vw, 13px);
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    outline-offset: 2px;
-    outline-color: transparent;
-    transition: outline-color 0.25s ease;
-  }
-  select:focus, button:focus {
-    outline-color: #dc143c;
+    font-size: clamp(9px, 2.5vw, 12px);
+    padding: 4px 6px;
+    border-radius: 4px;
   }
 
   button {
@@ -93,22 +77,18 @@
     color: white;
     border: none;
     cursor: pointer;
-    font-weight: 700;
-    transition: background-color 0.3s ease, transform 0.1s ease;
   }
+
   button:hover {
     background-color: #a90e2e;
-  }
-  button:active {
-    transform: scale(0.96);
   }
 
   .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 18px;
-    gap: 12px;
+    margin-top: 15px;
+    gap: 10px;
     flex-wrap: wrap;
   }
 
@@ -117,17 +97,13 @@
     color: white;
     font-weight: 700;
     border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
+    border-radius: 6px;
+    padding: 8px 12px;
     cursor: pointer;
-    transition: background-color 0.25s ease;
   }
 
   #pageNumbers button.active {
     background-color: #1a2f40;
-  }
-  #pageNumbers button:hover:not(.active) {
-    background-color: #bf132a;
   }
 
   .highlight {
@@ -135,7 +111,8 @@
     color: white !important;
   }
 
-  /* --- Мобильная адаптация: таблица превращается в карточки --- */
+  /* --- Мобильная адаптация: превращаем таблицу в карточки --- */
+
   @media (max-width: 768px) {
     table, thead, tbody, th, td, tr {
       display: block;
@@ -143,42 +120,45 @@
     }
 
     thead tr {
-      display: none; /* скрываем заголовок */
+      display: none; /* Скрываем заголовок таблицы */
     }
 
     tbody tr {
-      margin-bottom: 16px;
+      margin-bottom: 15px;
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-      padding: 14px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 12px;
       box-sizing: border-box;
-      border: 1px solid #ddd;
-      transition: box-shadow 0.3s ease;
-    }
-    tbody tr:hover {
-      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+
+      /* Отключаем подсветку при нажатии */
+      -webkit-tap-highlight-color: transparent;
+      tap-highlight-color: transparent;
+      user-select: none;
     }
 
     tbody tr:nth-child(even) {
       background-color: white;
-      border-color: #ccc;
+    }
+
+    tbody tr:hover {
+      background-color: white;
     }
 
     tbody td {
+      /* каждая ячейка - строка с лейблом и значением */
       display: flex;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-      font-weight: 600;
+      padding: 6px 8px;
+      border-bottom: 1px solid #ddd;
+      font-weight: 500;
       text-align: left;
       white-space: normal;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     tbody td:last-child {
       border-bottom: none;
-      padding-bottom: 0;
     }
 
     tbody td::before {
@@ -190,12 +170,12 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-right: 8px;
     }
 
+    /* Кнопки и селекты сжимаются */
     select, button, .schema-button {
-      font-size: 14px;
-      padding: 8px 12px;
+      font-size: 13px;
+      padding: 5px 8px;
     }
   }
 </style>
@@ -210,8 +190,8 @@
         <th onclick="startColumnSearch(1)">МАШИНА</th>
         <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
         <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
-        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
         <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
+        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
         <th>ОТПРАВИТЬ</th>
       </tr>
     </thead>
@@ -300,16 +280,6 @@
         <td data-label="МАШИНА">${row[1]}</td>
         <td data-label="ОТКРЫТА">${row[3]}</td>
         <td data-label="ЗАКРЫТА">${row[4]}</td>
-        ${row[5]
-          ? `<td data-label="ВЫПОЛНИЛ">${row[5]}</td>`
-          : `<td data-label="ВЫПОЛНИЛ" id="gText_${row[0]}">
-              <select id="g_${row[0]}">
-                <option value="" selected disabled></option>
-                <option value="Дима">Дима</option>
-                <option value="Женя">Женя</option>
-              </select>
-            </td>`
-        }
         ${row[6]
           ? `<td data-label="ПОЛОМКА">${row[6]}</td>`
           : `<td data-label="ПОЛОМКА" id="iText_${row[0]}">
@@ -317,6 +287,16 @@
                 <option value="" selected disabled></option>
                 <option value="ЕСТЬ">ЕСТЬ</option>
                 <option value="НЕТ">НЕТ</option>
+              </select>
+            </td>`
+        }
+        ${row[5]
+          ? `<td data-label="ВЫПОЛНИЛ">${row[5]}</td>`
+          : `<td data-label="ВЫПОЛНИЛ" id="gText_${row[0]}">
+              <select id="g_${row[0]}">
+                <option value="" selected disabled></option>
+                <option value="Дима">Дима</option>
+                <option value="Женя">Женя</option>
               </select>
             </td>`
         }
