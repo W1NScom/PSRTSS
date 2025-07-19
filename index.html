@@ -2,315 +2,213 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SMART MAINTENANCE BOWLING</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-    body, html {
-      height: 100%;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
       margin: 0;
-      font-family: "Poppins", sans-serif;
-      background-color: #f4f6f9;
-      color: #1a2f40;
+      padding: 20px;
     }
 
-    #app-content {
-      width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
+    h1 {
+      text-align: center;
+      color: #1f2937;
+      font-size: 28px;
+      margin-bottom: 30px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: white;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    thead {
+      background-color: #1f2937;
+      color: #fff;
     }
 
     th, td {
       padding: 12px;
       text-align: center;
-      font-size: 16px;
-      font-weight: 600;
+      border-bottom: 1px solid #ddd;
+      font-size: 14px;
     }
 
     th {
-      background-color: #1a2f40;
-      color: white;
-      font-size: 18px;
-      text-transform: uppercase;
-      cursor: pointer;
+      font-weight: 500;
     }
 
-    tbody tr:nth-child(even) {
-      background-color: #eef2f7;
+    tr:hover {
+      background-color: #f9fafb;
     }
 
-    tbody tr:hover {
-      background-color: #dde2eb;
-    }
-
-    .schema-button {
-      background-color: #1a2f40;
-      color: white;
-      padding: 10px 15px;
-      font-size: 16px;
-      font-weight: 700;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .schema-button:hover {
-      background-color: #143055;
-    }
-
-    select {
-      width: 95%;
-      padding: 10px;
-      border-radius: 6px;
+    input[type="text"] {
+      width: 90%;
+      padding: 6px 8px;
+      font-size: 14px;
       border: 1px solid #ccc;
-      background: white;
-      font-size: 16px;
-      text-align: center;
-    }
-
-    select:hover {
-      border-color: #1a2f40;
+      border-radius: 6px;
+      background-color: #f8f8f8;
     }
 
     button {
+      padding: 6px 12px;
       background-color: #dc143c;
       color: white;
-      padding: 10px 15px;
-      font-size: 16px;
-      font-weight: 700;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
     }
 
     button:hover {
-      background-color: #a90e2e;
+      background-color: #b01030;
     }
 
-    button:active {
-      transform: scale(0.97);
+    a {
+      color: #1f2937;
+      text-decoration: none;
+      font-weight: 500;
     }
 
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 20px;
-      gap: 20px;
-      flex-wrap: wrap;
+    a:hover {
+      text-decoration: underline;
     }
 
-    #pageNumbers button {
-      background-color: #dc143c;
-      color: white;
-      font-weight: 700;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 15px;
-      cursor: pointer;
-    }
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
 
-    #pageNumbers button.active {
-      background-color: #1a2f40;
-    }
+      thead {
+        display: none;
+      }
 
-    .highlight {
-      background-color: #dc143c !important;
-      color: white !important;
+      tr {
+        margin-bottom: 20px;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+      }
     }
   </style>
 </head>
 <body>
 
-<div id="app-content" style="display:none;">
-  <table>
+  <h1>SMART MAINTENANCE BOWLING</h1>
+
+  <table id="taskTable">
     <thead>
       <tr>
-        <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
-        <th onclick="startColumnSearch(1)">МАШИНА</th>
-        <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
-        <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
-        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
-        <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
-        <th>ОТПРАВИТЬ</th>
+        <th>№</th>
+        <th>Машина</th>
+        <th>Схема</th>
+        <th>Открыта</th>
+        <th>Закрыта</th>
+        <th>Имя</th>
+        <th>Поломка</th>
+        <th>OK</th>
       </tr>
     </thead>
-    <tbody id="tableBody"></tbody>
+    <tbody id="taskBody"></tbody>
   </table>
 
-  <div class="pagination">
-    <button onclick="prevPage()" id="prevBtn" disabled>← Назад</button>
-    <div id="pageNumbers" style="display: flex; gap: 10px;"></div>
-    <button onclick="nextPage()" id="nextBtn">Вперёд →</button>
-  </div>
-</div>
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz38lIp8NYu6nJb4ccc6Pl87bulLK2M9MpMSbnBtaMUrf7hoLXv2EbRZCB7a92PhmUA/exec';
 
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbz38lIp8NYu6nJb4ccc6Pl87bulLK2M9MpMSbnBtaMUrf7hoLXv2EbRZCB7a92PhmUA/exec";
+    async function loadData() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        const tbody = document.getElementById('taskBody');
+        tbody.innerHTML = '';
 
-  let fullData = [];
-  let currentPage = 1;
-  const rowsPerPage = 20;
-  let activeSearchColumn = null;
-  let activeSearchText = "";
+        data.forEach(row => {
+          const [rowNumber, machine, schema, opened, closed, doneBy, breakdown] = row;
 
-  window.onload = function () {
-    document.getElementById("app-content").style.display = "block";
-    loadSheetData();
-  };
+          const tr = document.createElement('tr');
 
-  function loadSheetData() {
-    fetch(`${API_URL}?action=getSheetData`)
-      .then(res => res.json())
-      .then(data => {
-        fullData = data;
-        renderPage(currentPage);
-      })
-      .catch(err => {
-        document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Ошибка загрузки данных</td></tr>";
-        console.error(err);
-      });
-  }
+          tr.innerHTML = `
+            <td data-label="№">${rowNumber}</td>
+            <td data-label="Машина">${machine}</td>
+            <td data-label="Схема"><a href="${schema}" target="_blank">Схема</a></td>
+            <td data-label="Открыта">${opened}</td>
+            <td data-label="Закрыта">${closed}</td>
+            <td data-label="Имя"><input type="text" value="${doneBy}" /></td>
+            <td data-label="Поломка"><input type="text" value="${breakdown}" /></td>
+            <td data-label="OK"><button onclick="saveRow(this, ${rowNumber})">OK</button></td>
+          `;
 
-  function updateSheet(rowNumber, doneByValue, breakdownValue) {
-    fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ rowNumber, doneBy: doneByValue, breakdown: breakdownValue }),
-      headers: { "Content-Type": "application/json" }
-    })
-      .then(res => res.json())
-      .then(updatedRow => {
-        const index = fullData.findIndex(row => row[0] === rowNumber);
-        if (index !== -1) fullData[index] = updatedRow;
-        renderPage(currentPage);
-      })
-      .catch(err => {
-        alert("Ошибка при отправке данных");
-        console.error(err);
-      });
-  }
-
-  function renderPage(page) {
-    const tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = "";
-
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = fullData.slice(start, end);
-
-    pageData.forEach((row) => {
-      const tr = document.createElement("tr");
-      const schemaLink = row[2] ? `<a href="${row[2]}" target="_blank"><button class="schema-button">Открыть</button></a>` : "Нет схемы";
-      tr.innerHTML = `<td>${schemaLink}</td><td>${row[1]}</td><td>${row[3]}</td><td>${row[4]}</td>`;
-
-      const doneBy = row[5] ? row[5] : "";
-      const breakdown = row[6] ? row[6] : "";
-
-      tr.innerHTML += doneBy
-        ? `<td>${doneBy}</td>`
-        : `<td id="gText_${row[0]}"><select id="g_${row[0]}">
-              <option value="" selected disabled></option>
-              <option value="Дима">Дима</option>
-              <option value="Женя">Женя</option>
-          </select></td>`;
-
-      tr.innerHTML += breakdown
-        ? `<td>${breakdown}</td>`
-        : `<td id="iText_${row[0]}"><select id="i_${row[0]}">
-              <option value="" selected disabled></option>
-              <option value="ЕСТЬ">ЕСТЬ</option>
-              <option value="НЕТ">НЕТ</option>
-          </select></td>`;
-
-      tr.innerHTML += `<td><button onclick="validateAndSend(${row[0]});">Отправить</button></td>`;
-      tableBody.appendChild(tr);
-    });
-
-    applyHighlight();
-    renderPageNumbers();
-
-    document.getElementById("prevBtn").disabled = currentPage === 1;
-    document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= fullData.length;
-  }
-
-  function renderPageNumbers() {
-    const pageContainer = document.getElementById("pageNumbers");
-    pageContainer.innerHTML = "";
-    const totalPages = Math.ceil(fullData.length / rowsPerPage);
-    let startPage = Math.max(currentPage - 2, 1);
-    let endPage = Math.min(startPage + 4, totalPages);
-    if (endPage - startPage < 4) startPage = Math.max(endPage - 4, 1);
-
-    for (let i = startPage; i <= endPage; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = i;
-      if (i === currentPage) btn.classList.add("active");
-      btn.onclick = () => { currentPage = i; renderPage(currentPage); };
-      pageContainer.appendChild(btn);
-    }
-  }
-
-  function nextPage() {
-    if (currentPage * rowsPerPage < fullData.length) {
-      currentPage++;
-      renderPage(currentPage);
-    }
-  }
-
-  function prevPage() {
-    if (currentPage > 1) {
-      currentPage--;
-      renderPage(currentPage);
-    }
-  }
-
-  function validateAndSend(rowNumber) {
-    const gSelect = document.getElementById(`g_${rowNumber}`);
-    const iSelect = document.getElementById(`i_${rowNumber}`);
-
-    if (!gSelect || !iSelect || !gSelect.value || !iSelect.value) {
-      alert("Заполните все формы!");
-      return;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Ошибка при загрузке:', error);
+        alert('Не удалось загрузить данные!');
+      }
     }
 
-    updateSheet(rowNumber, gSelect.value, iSelect.value);
-  }
+    async function saveRow(button, rowNumber) {
+      const tr = button.closest('tr');
+      const inputs = tr.querySelectorAll('input');
+      const doneBy = inputs[0].value.trim();
+      const breakdown = inputs[1].value.trim();
 
-  function startColumnSearch(columnIndex) {
-    const searchText = prompt("Введите текст для поиска:");
-    if (searchText === null || searchText.trim() === "") {
-      activeSearchColumn = null;
-      activeSearchText = "";
-    } else {
-      activeSearchColumn = columnIndex;
-      activeSearchText = searchText.trim().toLowerCase();
-    }
-    renderPage(currentPage);
-  }
+      if (!doneBy || !breakdown) {
+        alert('Заполните имя и поломку');
+        return;
+      }
 
-  function applyHighlight() {
-    if (activeSearchColumn === null || activeSearchText === "") return;
-    const rows = document.getElementById("tableBody").getElementsByTagName("tr");
-    for (let row of rows) {
-      const cell = row.getElementsByTagName("td")[activeSearchColumn];
-      if (!cell) continue;
-      const text = cell.textContent.toLowerCase();
-      cell.classList.toggle("highlight", text.includes(activeSearchText));
+      const formData = new FormData();
+      formData.append('rowNumber', rowNumber);
+      formData.append('doneByValue', doneBy);
+      formData.append('breakdownValue', breakdown);
+
+      try {
+        const response = await fetch(API_URL + '?action=updateSheet', {
+          method: 'POST',
+          body: formData
+        });
+
+        const updatedRow = await response.json();
+        const [_, machine, schema, opened, closed, doneByNew, breakdownNew] = updatedRow;
+
+        tr.cells[1].textContent = machine;
+        tr.cells[2].innerHTML = `<a href="${schema}" target="_blank">Схема</a>`;
+        tr.cells[3].textContent = opened;
+        tr.cells[4].textContent = closed;
+        inputs[0].value = doneByNew;
+        inputs[1].value = breakdownNew;
+
+        alert('Успешно обновлено!');
+      } catch (error) {
+        console.error('Ошибка при сохранении:', error);
+        alert('Ошибка при сохранении!');
+      }
     }
-  }
-</script>
+
+    loadData();
+  </script>
 
 </body>
 </html>
