@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SMART MAINTENANCE BOWLING</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -138,12 +138,12 @@
   <table>
     <thead>
       <tr>
-        <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
+        <th onclick="startColumnSearch(2)">ЗАДАЧА</th>
         <th onclick="startColumnSearch(1)">МАШИНА</th>
-        <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
-        <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
-        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
-        <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
+        <th onclick="startColumnSearch(3)">ОТКРЫТА</th>
+        <th onclick="startColumnSearch(4)">ЗАКРЫТА</th>
+        <th onclick="startColumnSearch(5)">ВЫПОЛНИЛ</th>
+        <th onclick="startColumnSearch(6)">ПОЛОМКА</th>
         <th>ОТПРАВИТЬ</th>
       </tr>
     </thead>
@@ -158,8 +158,6 @@
 </div>
 
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwjQAaqlep4a-R_6Lj-IAOt94GU9_2krndni7Qu6NSa1opzMxfCGx1ExH5_Q6fNd6Vk/exec";
-
   let fullData = [];
   let currentPage = 1;
   const rowsPerPage = 20;
@@ -173,44 +171,40 @@
     loadSheetData();
   };
 
-  // Загрузка данных через GET
   function loadSheetData() {
-    fetch(GAS_URL + "?action=getSheetData")
-      .then(response => response.json())
-      .then(data => {
-        fullData = data || [];
-        if (fullData.length === 0) {
-          document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Нет задач</td></tr>";
-          return;
-        }
-        renderPage(currentPage);
-      })
-      .catch(() => {
+    google.script.run.withSuccessHandler(function (response) {
+      try {
+        fullData = JSON.parse(response) || [];
+      } catch (e) {
         document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Ошибка загрузки данных</td></tr>";
-      });
+        return;
+      }
+
+      if (fullData.length === 0) {
+        document.getElementById("tableBody").innerHTML = "<tr><td colspan='7'>Нет задач</td></tr>";
+        return;
+      }
+
+      renderPage(currentPage);
+    }).getSheetData();
   }
 
-  // Отрисовка страницы
   function renderPage(page) {
     const tableBody = document.getElementById("tableBody");
     tableBody.innerHTML = "";
 
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    let pageData = fullData.slice(start, end);
-
-    // Фильтрация по поиску, если есть
+    // Фильтрация если активен поиск
+    let filteredData = fullData;
     if (activeSearchColumn !== null && activeSearchText !== "") {
-      pageData = pageData.filter(row => {
-        const cell = row[activeSearchColumn];
-        return cell && cell.toString().toLowerCase().includes(activeSearchText);
+      filteredData = fullData.filter(row => {
+        const cellText = row[activeSearchColumn] ? row[activeSearchColumn].toString().toLowerCase() : "";
+        return cellText.includes(activeSearchText);
       });
     }
 
-    if (pageData.length === 0) {
-      tableBody.innerHTML = "<tr><td colspan='7'>Нет данных для отображения</td></tr>";
-      return;
-    }
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageData = filteredData.slice(start, end);
 
     pageData.forEach((row) => {
       const tr = document.createElement("tr");
@@ -223,7 +217,7 @@
 
       tr.innerHTML += doneBy
         ? `<td>${doneBy}</td>`
-        : `<td><select id="g_${row[0]}">
+        : `<td id="gText_${row[0]}"><select id="g_${row[0]}">
               <option value="" selected disabled></option>
               <option value="Дима">Дима</option>
               <option value="Женя">Женя</option>
@@ -231,27 +225,30 @@
 
       tr.innerHTML += breakdown
         ? `<td>${breakdown}</td>`
-        : `<td><select id="i_${row[0]}">
+        : `<td id="iText_${row[0]}"><select id="i_${row[0]}">
               <option value="" selected disabled></option>
               <option value="ЕСТЬ">ЕСТЬ</option>
               <option value="НЕТ">НЕТ</option>
           </select></td>`;
 
-      tr.innerHTML += `<td><button onclick="validateAndSend(${row[0]});">Отправить</button></td>`;
+      tr.innerHTML += `<td><button id="btn_${row[0]}" onclick="validateAndSend(${row[0]});">Отправить</button></td>`;
       tableBody.appendChild(tr);
     });
 
-    renderPageNumbers();
+    applyHighlight();
+    renderPageNumbers(filteredData.length);
 
     document.getElementById("prevBtn").disabled = currentPage === 1;
-    document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= fullData.length;
+    document.getElementById("nextBtn").disabled = currentPage * rowsPerPage >= filteredData.length;
   }
 
-  function renderPageNumbers() {
+  function renderPageNumbers(totalItems) {
     const pageContainer = document.getElementById("pageNumbers");
     pageContainer.innerHTML = "";
 
-    const totalPages = Math.ceil(fullData.length / rowsPerPage);
+    const totalPages = Math.ceil(totalItems / rowsPerPage);
+    if(totalPages === 0) return;
+
     let startPage = Math.max(currentPage - 2, 1);
     let endPage = Math.min(startPage + 4, totalPages);
 
@@ -272,63 +269,35 @@
   }
 
   function nextPage() {
-    if (currentPage * rowsPerPage < fullData.length) {
-      currentPage++;
-      renderPage(currentPage);
-    }
+    currentPage++;
+    renderPage(currentPage);
   }
 
   function prevPage() {
-    if (currentPage > 1) {
-      currentPage--;
-      renderPage(currentPage);
-    }
+    currentPage--;
+    renderPage(currentPage);
   }
 
   function validateAndSend(rowNumber) {
-    const doneBySelect = document.getElementById(`g_${rowNumber}`);
-    const breakdownSelect = document.getElementById(`i_${rowNumber}`);
+    const gSelect = document.getElementById(`g_${rowNumber}`);
+    const iSelect = document.getElementById(`i_${rowNumber}`);
 
-    if (!doneBySelect || !breakdownSelect) {
-      alert("Выберите значения перед отправкой.");
-      return;
-    }
-
-    const doneByValue = doneBySelect.value;
-    const breakdownValue = breakdownSelect.value;
-
-    if (!doneByValue || !breakdownValue) {
+    if (!gSelect || !iSelect || !gSelect.value || !iSelect.value) {
       alert("Заполните все формы!");
       return;
     }
 
-    updateSheet(rowNumber, doneByValue, breakdownValue);
+    updateSheet(rowNumber, gSelect.value, iSelect.value);
   }
 
-  // Отправка POST запроса на GAS для обновления строки
   function updateSheet(rowNumber, doneByValue, breakdownValue) {
-    fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "updateSheet",
-        rowNumber,
-        doneByValue,
-        breakdownValue
-      }),
-      headers: {
-        "Content-Type": "application/json"
+    google.script.run.withSuccessHandler((updatedRow) => {
+      const index = fullData.findIndex(row => row[0] === rowNumber);
+      if (index !== -1) {
+        fullData[index] = updatedRow;
       }
-    })
-      .then(response => response.json())
-      .then(updatedRow => {
-        // Обновляем локальные данные и перерисовываем страницу
-        const index = fullData.findIndex(row => row[0] === updatedRow[0]);
-        if (index !== -1) {
-          fullData[index] = updatedRow;
-        }
-        renderPage(currentPage);
-      })
-      .catch(() => alert("Ошибка обновления данных"));
+      renderPage(currentPage);
+    }).updateSheet(rowNumber, doneByValue, breakdownValue);
   }
 
   function startColumnSearch(columnIndex) {
@@ -340,7 +309,28 @@
       activeSearchColumn = columnIndex;
       activeSearchText = searchText.trim().toLowerCase();
     }
+    currentPage = 1;
     renderPage(currentPage);
+  }
+
+  function applyHighlight() {
+    if (activeSearchColumn === null || activeSearchText === "") return;
+
+    const tableBody = document.getElementById("tableBody");
+    const rows = tableBody.getElementsByTagName("tr");
+
+    for (let row of rows) {
+      const cells = row.getElementsByTagName("td");
+      if (cells.length > activeSearchColumn) {
+        const cell = cells[activeSearchColumn];
+        const text = cell.textContent || cell.innerText;
+        if (text.toLowerCase().includes(activeSearchText)) {
+          cell.classList.add("highlight");
+        } else {
+          cell.classList.remove("highlight");
+        }
+      }
+    }
   }
 </script>
 
