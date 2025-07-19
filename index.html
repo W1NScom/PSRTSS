@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>SMART MAINTENANCE BOWLING</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -13,36 +13,54 @@
       font-family: "Poppins", sans-serif;
       background-color: #f4f6f9;
       color: #1a2f40;
+      -webkit-text-size-adjust: 100%; /* предотвращаем авто-зум в мобильных */
     }
 
     #app-content {
       width: 100%;
-      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px 15px;
       box-sizing: border-box;
+    }
+
+    /* Обертка для горизонтального скролла */
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: white;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: white;
+      table-layout: fixed; /* фиксированная ширина колонок */
+      min-width: 700px; /* чтобы не слишком уж сжималось */
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     th, td {
-      padding: 12px;
+      padding: 10px 8px;
       text-align: center;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
+      word-wrap: break-word;
+      /* ограничение высоты строк */
+      max-width: 150px;
+      overflow-wrap: anywhere;
     }
 
     th {
       background-color: #1a2f40;
       color: white;
-      font-size: 18px;
+      font-size: 15px;
       text-transform: uppercase;
       cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
     }
 
     tbody tr:nth-child(even) {
@@ -56,13 +74,14 @@
     .schema-button {
       background-color: #1a2f40;
       color: white;
-      padding: 10px 15px;
-      font-size: 16px;
+      padding: 7px 12px;
+      font-size: 14px;
       font-weight: 700;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       transition: 0.2s ease;
+      white-space: nowrap;
     }
 
     .schema-button:hover {
@@ -70,13 +89,15 @@
     }
 
     select {
-      width: 95%;
-      padding: 10px;
+      width: 100%;
+      padding: 6px 8px;
       border-radius: 6px;
       border: 1px solid #ccc;
       background: white;
-      font-size: 16px;
+      font-size: 14px;
       text-align: center;
+      box-sizing: border-box;
+      cursor: pointer;
     }
 
     select:hover {
@@ -86,13 +107,14 @@
     button {
       background-color: #dc143c;
       color: white;
-      padding: 10px 15px;
-      font-size: 16px;
+      padding: 8px 12px;
+      font-size: 14px;
       font-weight: 700;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
     button:hover {
@@ -107,8 +129,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 20px;
-      gap: 20px;
+      margin-top: 15px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -118,8 +140,10 @@
       font-weight: 700;
       border: none;
       border-radius: 6px;
-      padding: 10px 15px;
+      padding: 8px 12px;
       cursor: pointer;
+      min-width: 36px;
+      font-size: 14px;
     }
 
     #pageNumbers button.active {
@@ -129,26 +153,80 @@
     .highlight {
       background-color: #dc143c !important;
       color: white !important;
+      font-weight: 700;
+    }
+
+    /* Медиазапросы для мобильных */
+    @media (max-width: 768px) {
+      th, td {
+        font-size: 12px;
+        padding: 8px 6px;
+        max-width: 100px;
+      }
+      .schema-button, button {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+      select {
+        font-size: 12px;
+        padding: 5px 6px;
+      }
+      #app-content {
+        padding: 10px 8px;
+      }
+      table {
+        min-width: 600px;
+      }
+      #pageNumbers button {
+        padding: 6px 8px;
+        font-size: 12px;
+        min-width: 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      table {
+        min-width: 500px;
+      }
+      th, td {
+        max-width: 80px;
+        padding: 6px 4px;
+      }
+      .schema-button, button {
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+      select {
+        font-size: 11px;
+        padding: 4px 5px;
+      }
+      #pageNumbers button {
+        padding: 5px 6px;
+        font-size: 11px;
+        min-width: 26px;
+      }
     }
   </style>
 </head>
 <body>
 
 <div id="app-content" style="display:none;">
-  <table>
-    <thead>
-      <tr>
-        <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
-        <th onclick="startColumnSearch(1)">МАШИНА</th>
-        <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
-        <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
-        <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
-        <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
-        <th>ОТПРАВИТЬ</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="startColumnSearch(0)">ЗАДАЧА</th>
+          <th onclick="startColumnSearch(1)">МАШИНА</th>
+          <th onclick="startColumnSearch(2)">ОТКРЫТА</th>
+          <th onclick="startColumnSearch(3)">ЗАКРЫТА</th>
+          <th onclick="startColumnSearch(4)">ВЫПОЛНИЛ</th>
+          <th onclick="startColumnSearch(5)">ПОЛОМКА</th>
+          <th>ОТПРАВИТЬ</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
 
   <div class="pagination">
     <button onclick="prevPage()" id="prevBtn" disabled>← Назад</button>
